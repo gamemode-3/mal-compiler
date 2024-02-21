@@ -109,9 +109,23 @@ IF_ICMPEQ = """
 1 6: OPC - H; ifeq; goto 0xA5 0 1
 """
 
+ISTORE = """
+0 1: H = LV
+0 2: MAR = MBRU + H;
+0 3: MDR = TOS; wr
+0 4: SP = MAR = SP - 1; rd
+0 5: PC = PC + 1; fetch
+0 6: TOS = MDR; goto Main1
+"""
 
-INPUT = IF_ICMPEQ
-PROGRAM_START = 0x9F
+TMP = """
+0 0: H = MBRU << 8
+0 3:
+"""
+
+
+INPUT = TMP
+PROGRAM_START = 0xF3
 
 LINE_NAMES = {"Main1": "100000000"}
 
@@ -344,14 +358,15 @@ for i in range(len(lines)):
                 and tokens[current] == "<<"
                 and tokens[current + 1] == "8"
             ):
-                jam[S8LL] = "1"
+                print(tokens[current:])
+                alu[S8LL] = "1"
                 current += 2
             if (
                 len(tokens[current:]) >= 2
                 and tokens[current] == ">>"
                 and tokens[current + 1] == "1"
             ):
-                jam[S1RA] = "1"
+                alu[S1RA] = "1"
                 current += 2
 
             to_be_assigned = parts[:-1]
