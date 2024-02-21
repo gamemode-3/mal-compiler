@@ -1,4 +1,4 @@
-# mal-compiler
+# MAL compiler
 Python tool for compiling MAL programs to the binary representation
 
 - You need to edit the text file to input programs, it isn't a command line tool.
