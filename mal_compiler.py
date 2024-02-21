@@ -105,8 +105,8 @@ IF_ICMPEQ = """
 0 2: MAR = SP = SP - 1
 0 3: H = MDR; rd
 0 4: OPC = TOS
-1 5: TOS = MDR
-1 6: OPC - H; ifeq; goto 0xA5 0 1
+0 5: TOS = MDR
+0 6: OPC - H; ifeq; goto 0xA5 0 1
 """
 
 ISTORE = """
@@ -118,14 +118,15 @@ ISTORE = """
 0 6: TOS = MDR; goto Main1
 """
 
-TMP = """
-0 0: H = MBRU << 8
-0 3:
+ISUB = """
+0 1: MAR = SP = SP - 1; rd
+0 2: H = TOS
+0 3: MDR = TOS = MDR - H; wr; goto Main1
 """
 
 
-INPUT = TMP
-PROGRAM_START = 0xF3
+INPUT = IF_ICMPEQ
+PROGRAM_START = 0x9F
 
 LINE_NAMES = {"Main1": "100000000"}
 
@@ -376,6 +377,7 @@ for i in range(len(lines)):
         if "-" in comp:
             parts = comp.split("-")
             if parts[0].strip() in B_BUS_INDEX and parts[1].strip() == "H":
+                b_bus = f"{B_BUS_INDEX[parts[0].strip()]:04b}"
                 alu[F0] = "1"
                 alu[F1] = "1"
                 alu[ENA] = "1"
@@ -396,9 +398,9 @@ for i in range(len(lines)):
             mem[2] = "1"
 
         if comp == "iflt":
-            jam[2] = "1"
+            jam[1] = "1"
         if comp == "ifeq":
-            jam[3] = "1"
+            jam[2] = "1"
 
         if comp.startswith("goto"):
             parts = comp.split(" ")
